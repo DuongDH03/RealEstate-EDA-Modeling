@@ -1,0 +1,24 @@
+{
+    "name": "RealEstate-EDA-Python",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-toolsai.jupyter",
+                "ms-python.vscode-pylance",
+                "ms-python.black-formatter",
+                "GitHub.copilot"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/bin/python3",
+                "terminal.integrated.defaultProfile.linux": "zsh"
+            }
+        }
+    },
+    "forwardPorts": [8888],
+    "remoteUser": "root"
+}
