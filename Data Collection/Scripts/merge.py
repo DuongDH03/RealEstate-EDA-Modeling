@@ -70,8 +70,8 @@ def merge_jsonl_to_csv(json_dir, output_dir, output_filename="merged_data.csv"):
 
 if __name__ == "__main__":
     # Define source and destination directories
-    json_dir = "/home/keishi/Code/RealEstate-EDA-Modeling/data/json"
-    output_dir = "/home/keishi/Code/RealEstate-EDA-Modeling/data/raw"
+    json_dir = "../Datasets/nhatot.com/json"
+    output_dir = "../Datasets/nhatot.com/raw"
     
     # Execute the merge operation
     merge_jsonl_to_csv(json_dir, output_dir)
