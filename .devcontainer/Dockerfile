@@ -43,4 +43,9 @@ RUN pip3 install --no-cache-dir \
     seaborn \
     jupyter \
     ipykernel \
-    notebook
+    notebook \
+    scipy \
+    scikit-learn \
+    requests \
+    beautifulsoup4 \
+    lxml

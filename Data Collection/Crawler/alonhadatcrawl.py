@@ -5,12 +5,13 @@ import time
 import sys
 from bs4 import BeautifulSoup
 import pickle
+import re
 
 
 def is_captcha_page(soup):
     """Check if the current page is a CAPTCHA verification page"""
-    captcha_text = soup.find(text="Vui lòng xác minh không phải Robot")
-    thong_bao = soup.find(text="THÔNG BÁO")
+    captcha_text = soup.find(string="Vui lòng xác minh không phải Robot")
+    thong_bao = soup.find(string="THÔNG BÁO")
     return captcha_text is not None or thong_bao is not None
 
 
@@ -65,28 +66,64 @@ def crawl_alonhadat_page(page_num=1, max_retries=3, retry_delay=5):
             results = []
             for item in items:
                 try:
-                    title_tag = item.find("div", class_="ct_title").a
-                    title = title_tag.get_text(strip=True)
-                    link = "https://alonhadat.com.vn" + title_tag["href"]
+                    # Ensure title and link exist
+                    title_div = item.find("div", class_="ct_title")
+                    if not title_div:
+                        continue
+                    anchor = title_div.find("a")
+                    if not anchor or not anchor.get("href"):
+                        continue
+                    title = anchor.get_text(strip=True)
+                    link = "https://alonhadat.com.vn" + anchor["href"]
 
-                    date = item.find("div", class_="ct_date").get_text(strip=True)
+                    # Extract date
+                    date_div = item.find("div", class_="ct_date")
+                    date = date_div.get_text(strip=True) if date_div else ""
 
-                    area = item.find("div", class_="ct_dt")
-                    area = area.get_text(strip=True).replace("Diện tích:", "") if area else ""
+                    # Extract area
+                    area_div = item.find("div", class_="ct_dt")
+                    area = area_div.get_text(strip=True).replace("Diện tích:", "") if area_div else ""
 
-                    price = item.find("div", class_="ct_price")
-                    price = price.get_text(strip=True).replace("Giá:", "") if price else ""
+                    # Extract price
+                    price_div = item.find("div", class_="ct_price")
+                    price = price_div.get_text(strip=True).replace("Giá:", "") if price_div else ""
 
-                    floors = item.find("span", class_="floors")
-                    floors = floors["title"] if floors else ""
+                    # Extract floors
+                    floors_span = item.find("span", class_="floors")
+                    floors = floors_span.get("title", "") if floors_span else ""
 
-                    bedrooms = item.find("span", class_="bedroom")
-                    bedrooms = bedrooms["title"] if bedrooms else ""
+                    # Extract bedrooms
+                    bed_span = item.find("span", class_="bedroom")
+                    bedrooms = bed_span.get("title", "") if bed_span else ""
 
-                    address = item.find("div", class_="ct_dis")
-                    address = address.get_text(separator=", ", strip=True) if address else ""
+                    # Extract address
+                    addr_div = item.find("div", class_="ct_dis")
+                    address = addr_div.get_text(separator=", ", strip=True) if addr_div else ""
+
+                    # Initialize optional fields
+                    road_width = car_parking = description = orientation = dimension = ""
+                    # Extract description summary
+                    desc_div = item.find("div", class_="ct_content")
+                    if desc_div:
+                        description = desc_div.get_text(separator=" ", strip=True)
+                    # Parse orientation and dimension from description
+                    if description:
+                        orient_m = re.search(r"Hướng[:：]\s*([^\s,]+)", description)
+                        if orient_m:
+                            orientation = orient_m.group(1)
+                        dim_m = re.search(r"KT[:：]\s*([\d\.x]+)", description)
+                        if dim_m:
+                            dimension = dim_m.group(1)
+                    # Extract additional span titles
+                    for span in item.find_all("span", title=True):
+                        t = span["title"]
+                        if "Đường trước nhà" in t:
+                            road_width = t.split(":", 1)[1].strip()
+                        if "Chỗ để xe" in t:
+                            car_parking = t.split(":", 1)[1].strip()
 
                     results.append({
+                        # Primary info
                         "title": title,
                         "url": link,
                         "date": date,
@@ -95,6 +132,12 @@ def crawl_alonhadat_page(page_num=1, max_retries=3, retry_delay=5):
                         "floors": floors,
                         "bedrooms": bedrooms,
                         "address": address,
+                        # Optional fields
+                        "road_width": road_width,
+                        "car_parking": car_parking,
+                        "description": description,
+                        "orientation": orientation,
+                        "dimension": dimension,
                     })
                 except Exception as e:
                     print(f"Error parsing item: {e}")
@@ -114,8 +157,13 @@ def crawl_alonhadat_page(page_num=1, max_retries=3, retry_delay=5):
 
 def main():
     # Default page range
-    start_page = 20
-    end_page = 100
+    start_page = 2
+    end_page = 200
+
+    # Set up output directory relative to project root
+    root_dir = os.getcwd()
+    output_dir = os.path.join(root_dir, 'Data Collection', 'Datasets', 'alonhadat.com', 'json')
+    os.makedirs(output_dir, exist_ok=True)
     
     # Check if resuming from a previous run
     last_completed = load_progress()
@@ -136,7 +184,7 @@ def main():
         data = crawl_alonhadat_page(page_num)
         
         if data:  # Only write file if we got data
-            output_file = f"page_{page_num}.jsonl"
+            output_file = os.path.join(output_dir, f"page_{page_num}.jsonl")
             with open(output_file, "w", encoding="utf-8") as file:
                 for d in data:
                     file.write(json.dumps(d, ensure_ascii=False) + "\n")
