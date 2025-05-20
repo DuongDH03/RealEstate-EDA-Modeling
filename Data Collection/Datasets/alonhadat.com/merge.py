@@ -4,9 +4,9 @@ import csv
 from pathlib import Path
 
 # Adjust paths if needed
-jsonl_dir = Path(__file__).parent.parent / "alonhadat.com" / "json"
+jsonl_dir = Path(__file__).parent.parent / "alonhadat.com" / "json_new"
 output_dir = Path(__file__).parent.parent / "alonhadat.com" / "raw"
-output_filename = "merged_alonhadat.csv"
+output_filename = "merged_alonhadat_new.csv"
 
 output_dir.mkdir(parents=True, exist_ok=True)
 
