@@ -69,9 +69,10 @@ def merge_jsonl_to_csv(json_dir, output_dir, output_filename="merged_data.csv"):
     print("Column names:", fieldnames)
 
 if __name__ == "__main__":
-    # Define source and destination directories
-    json_dir = "../Datasets/nhatot.com/json"
-    output_dir = "../Datasets/nhatot.com/raw"
-    
+    # Set base directory to script location
+    base_dir = Path(__file__).parent
+    json_dir = base_dir / 'json_batdongsan'
+    output_dir = base_dir / 'raw_batdongsan'
+    output_filename = 'batdongsan.csv'
     # Execute the merge operation
-    merge_jsonl_to_csv(json_dir, output_dir)
+    merge_jsonl_to_csv(str(json_dir), str(output_dir), output_filename)

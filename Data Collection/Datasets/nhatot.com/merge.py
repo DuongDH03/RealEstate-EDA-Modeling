@@ -4,9 +4,9 @@ import json
 import csv
 from pathlib import Path
 
-json_dir = "../Datasets/nhatot.com/json"  # Adjust path if running from notebook
-output_dir = "../Datasets/nhatot.com/raw"
-output_filename = "merged_data.csv"
+json_dir = "./Data Collection/Datasets/nhatot.com/json"  # Adjust path if running from notebook
+output_dir = "./Data Collection/Datasets/nhatot.com/raw"
+output_filename = "nhatot.csv"
 
 Path(output_dir).mkdir(parents=True, exist_ok=True)
 
