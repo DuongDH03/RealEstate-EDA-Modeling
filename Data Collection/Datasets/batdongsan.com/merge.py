@@ -71,8 +71,8 @@ def merge_jsonl_to_csv(json_dir, output_dir, output_filename="merged_data.csv"):
 if __name__ == "__main__":
     # Set base directory to script location
     base_dir = Path(__file__).parent
-    json_dir = base_dir / 'json_batdongsan'
-    output_dir = base_dir / 'raw_batdongsan'
+    json_dir = base_dir / 'json'
+    output_dir = base_dir / 'raw'
     output_filename = 'batdongsan.csv'
     # Execute the merge operation
     merge_jsonl_to_csv(str(json_dir), str(output_dir), output_filename)
