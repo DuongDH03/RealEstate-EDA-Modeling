@@ -12,7 +12,8 @@
                 "ms-python.vscode-pylance",
                 "ms-python.black-formatter",
                 "GitHub.copilot",
-                "mechatroner.rainbow-csv"
+                "mechatroner.rainbow-csv",
+                "ms-toolsai.datawrangler"
             ],
             "settings": {
                 "python.defaultInterpreterPath": "/usr/bin/python3",

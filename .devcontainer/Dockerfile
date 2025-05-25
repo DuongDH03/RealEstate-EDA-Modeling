@@ -48,4 +48,7 @@ RUN pip3 install --no-cache-dir \
     scikit-learn \
     requests \
     beautifulsoup4 \
-    lxml
+    lxml \
+    geopy \
+    tqdm \
+    folium 
